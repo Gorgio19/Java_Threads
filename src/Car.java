@@ -1,7 +1,7 @@
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-public class Car implements Runnable {
+public class Car implements Runnable{
     long maximumTimeToWait = 5;
     private static final Semaphore parkingLot = new Semaphore(5,true);
     int carNumber;
@@ -24,21 +24,20 @@ public class Car implements Runnable {
     @Override
     public void run(){
         setParkingTime((long) (Math.random() * 10 + 1));
-        System.out.println("Car" + carNumber + " has arrived" + "(" + parkingTime + ")");
         try {
-            if (parkingLot.tryAcquire()){
-                TimeUnit.SECONDS.sleep(maximumTimeToWait);
-                if (parkingLot.tryAcquire()){
-            System.out.println("Car " + carNumber + " left for another parking");
-                }
-            }
-            parkingLot.acquire();
-            System.out.println("Car " + carNumber + " occupied the slot, remaining " + parkingLot.availablePermits());
+            System.out.println("Car" + carNumber + " has arrived" + " / " + parkingTime + "seconds");
+           if (parkingLot.tryAcquire(maximumTimeToWait,TimeUnit.SECONDS)){
+               System.out.println("Car" + carNumber + " occupied the slot, remaining " + parkingLot.availablePermits());
             TimeUnit.SECONDS.sleep(parkingTime);
-            System.out.println("Car " + carNumber + " has left the spot" + "remaining " + parkingLot.availablePermits() + "  Time " + parkingTime + " seconds");
-            parkingLot.release();
+            carOut();
+            } else System.out.println("Car"+carNumber+" left for Another Parking");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public synchronized void carOut() {
+        parkingLot.release();
+        System.out.println("Car" + carNumber + " has left the spot" + " remaining " + parkingLot.availablePermits() + "  Time " + parkingTime + " seconds");
     }
 }
