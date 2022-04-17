@@ -25,6 +25,7 @@ public class Car implements Runnable{
     public void run(){
         setParkingTime((long) (Math.random() * 10 + 1));
         try {
+            TimeUnit.MILLISECONDS.sleep(carNumber* 65L);
             System.out.println("Car" + carNumber + " has arrived" + " / " + parkingTime + "seconds");
            if (parkingLot.tryAcquire(maximumTimeToWait,TimeUnit.SECONDS)){
                System.out.println("Car" + carNumber + " occupied the slot, remaining " + parkingLot.availablePermits());
